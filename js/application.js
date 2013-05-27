@@ -116,9 +116,12 @@ String.prototype.repeat = function(num) {
       }
     });
 
-    $('#spinner-01').customspinner({
-      min: -99,
-      max: 99
+    $('.spinner.money').customspinner({
+      min: 0,
+      max: 1000,
+      step: 0.10,
+      numberFormat: "C"
+      //culture: "pt-BR"
     }).on('focus', function () {
       $(this).closest('.ui-spinner').addClass('focus');
     }).on('blur', function () {
