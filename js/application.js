@@ -1,126 +1,172 @@
 // Some general UI pack related JS
-//Loading Personal Information
-function getPersonalInfo() {
-	if($.trim($("#inputRG").val()) !== ""){
-		$("p.loading.rg").fadeIn(250);
-	}
-}
+// Extend JS String with repeat method
+String.prototype.repeat = function(num) {
+  return new Array(num + 1).join(this);
+};
 
-//Loading Address from Correios
-function getAddress() {
-	if($.trim($("#inputCEP").val()) !== ""){
-		$("p.loading.cep").fadeIn(250);
-		$("p.info.cep").fadeOut(250);
-		$("p.text-error.cep").fadeOut(0);
-		$.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+$("#inputCEP").val(), function(){
-			if(resultadoCEP["tipo_logradouro"] !== ""){
-				$("p.loading.cep").fadeOut(0);
-				$("p.info.cep").fadeOut(0);
-				if (resultadoCEP["resultado"]) {
-					$("#inputAddress").val(unescape(resultadoCEP["tipo_logradouro"]) + " " + unescape(resultadoCEP["logradouro"]));
-					$("#inputNeighbor").val(unescape(resultadoCEP["bairro"]));
-					$("#inputCity").val(unescape(resultadoCEP["cidade"]));
-					$("#selectState").val(unescape(resultadoCEP["uf"]));
-					$("#inputAddressNumber").focus();
-				}
-			} else {
-				$("#inputCEP").focus();
-				$("p.loading.cep").fadeOut(0);
-				$("p.text-error.cep").fadeIn(250);
-				$("p.info.cep").fadeIn(240);
-			}
-		});
-	}
-}
+(function($) {
 
-$(function () {
-    // Custom selects
-    $("select").dropkick();
-
-    //add mask in inputs
-    $("#inputBday").mask("99/99/9999");
-    $("#inputPhoneHome").mask("(99) 9999-9999");
-    $("#inputMobile").mask("(99) 9?9999-9999");
-    $("#inputCEP").mask("99999-999");
-
-});
-
-
-$(document).ready(function() {
-    // Todo list
-    $(".todo li").click(function() {
-        $(this).toggleClass("todo-done");
+  // Add segments to a slider
+  $.fn.addSliderSegments = function (amount) {
+    return this.each(function () {
+      var segmentGap = 100 / (amount - 1) + "%"
+        , segment = "<div class='ui-slider-segment' style='margin-left: " + segmentGap + ";'></div>";
+      $(this).prepend(segment.repeat(amount - 2));
     });
+  };
 
-    // Init tooltips
+  $(function() {
+
+    // Custom Selects
+    $("select[name='huge']").selectpicker({style: 'btn-huge btn-primary', menuStyle: 'dropdown-inverse'});
+    $("select[name='large']").selectpicker({style: 'btn-large btn-danger'});
+    $("select[name='info']").selectpicker({style: 'btn-info'});
+    $("select[name='small']").selectpicker({style: 'btn-small btn-warning'});
+    $("select").selectpicker({style: 'btn-primary', menuStyle: 'dropdown-inverse'});
+
+    // Tabs
+    $(".nav-tabs a").on('click', function (e) {
+      e.preventDefault();
+      $(this).tab("show");
+    })
+
+    // Tooltips
     $("[data-toggle=tooltip]").tooltip("show");
 
-    // Init jQuery UI slider
-    $("#slider").slider({
+    // Tags Input
+    $(".tagsinput").tagsInput();
+
+    // jQuery UI Sliders
+    var $slider = $("#slider");
+    if ($slider.length > 0) {
+      $slider.slider({
         min: 1,
         max: 5,
-        value: 2,
+        value: 3,
         orientation: "horizontal",
         range: "min"
+      }).addSliderSegments($slider.slider("option").max);
+    }
+
+    var $slider2 = $("#slider2");
+    if ($slider2.length > 0) {
+      $slider2.slider({
+        min: 1,
+        max: 5,
+        values: [3, 4],
+        orientation: "horizontal",
+        range: true
+      }).addSliderSegments($slider2.slider("option").max);
+    }
+
+    var $slider3 = $("#slider3")
+      , slider3ValueMultiplier = 100
+      , slider3Options;
+    if ($slider3.length > 0) {
+      $slider3.slider({
+        min: 1,
+        max: 5,
+        values: [3, 4],
+        orientation: "horizontal",
+        range: true,
+        slide: function(event, ui) {
+          $slider3.find(".ui-slider-value:first").text("$" + ui.values[0] * slider3ValueMultiplier).end()
+        .find(".ui-slider-value:last").text("$" + ui.values[1] * slider3ValueMultiplier);
+        }
+      });
+      slider3Options = $slider3.slider("option");
+      $slider3.addSliderSegments(slider3Options.max).find(".ui-slider-value:first").text("$" + slider3Options.values[0] * slider3ValueMultiplier).end()
+        .find(".ui-slider-value:last").text("$" + slider3Options.values[1] * slider3ValueMultiplier);
+    }
+
+    // Add style class name to a tooltips
+    $(".tooltip").addClass(function() {
+      if ($(this).prev().attr("data-tooltip-style")) {
+        return "tooltip-" + $(this).prev().attr("data-tooltip-style");
+      }
     });
 
-    // JS input/textarea placeholder
+    // Placeholders for input/textarea
     $("input, textarea").placeholder();
 
     // Make pagination demo work
-    $(".pagination a").click(function() {
-        if (!$(this).parent().hasClass("previous") && !$(this).parent().hasClass("next")) {
-            $(this).parent().siblings("li").removeClass("active");
-            $(this).parent().addClass("active");
-        }
+    $(".pagination a").on('click', function() {
+      $(this).parent().siblings("li").removeClass("active").end().addClass("active");
     });
 
-    $(".btn-group a").click(function() {
-        $(this).siblings().removeClass("active");
-        $(this).addClass("active");
+    $(".btn-group a").on('click', function() {
+      $(this).siblings().removeClass("active").end().addClass("active");
     });
 
-    // Disable link click not scroll top
-    $("a[href='#']").click(function() {
-        return false;
+    // Disable link clicks to prevent page scrolling
+    $('a[href="#fakelink"]').on('click', function (e) {
+      e.preventDefault();
     });
 
-jQuery.validator.setDefaults({
-    errorClass: "text-error error",
-	validClass: "valid",
-	errorElement: "label"
-});
+    // jQuery UI Spinner
+    $.widget( "ui.customspinner", $.ui.spinner, {
+      _buttonHtml: function() { // Remove arrows on the buttons
+        return "" +
+        "<a class='ui-spinner-button ui-spinner-up ui-corner-tr'>" +
+          "<span class='ui-icon " + this.options.icons.up + "'></span>" +
+        "</a>" +
+        "<a class='ui-spinner-button ui-spinner-down ui-corner-br'>" +
+          "<span class='ui-icon " + this.options.icons.down + "'></span>" +
+        "</a>";
+      }
+    });
 
-//Validation Form Booking
-    $("#formBooking").validate({
-		// Define as regras
-		rules:{
-				inputRG:{
-					// campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
-					required: true
-				},
-				inputName:{
-					// campoNome será obrigatório (required) e terá tamanho mínimo (minLength)
-					required: true, minlength: 2
-				},
-				inputEMail:{
-					// campoEmail será obrigatório (required) e precisará ser um e-mail válido (email)
-					email: true
-				}
-		},
-		// Define as mensagens de erro para cada regra
-		messages:{
-			inputRG:{
-				required: "Digite o seu RG"
-			},
-			inputName:{
-				required: "Digite o seu nome",
-				minLength: "O seu nome deve conter, no mínimo, 2 caracteres"
-			},
-			inputEMail:{
-				required: "Digite o seu e-mail para contato",
-				email: "Digite um e-mail válido"
-			}
-		}
-	});
-});
+    $('#spinner-01').customspinner({
+      min: -99,
+      max: 99
+    }).on('focus', function () {
+      $(this).closest('.ui-spinner').addClass('focus');
+    }).on('blur', function () {
+      $(this).closest('.ui-spinner').removeClass('focus');
+    });
+
+
+    // Focus state for append/prepend inputs
+    $('.input-prepend, .input-append').on('focus', 'input', function () {
+      $(this).closest('.control-group, form').addClass('focus');
+    }).on('blur', 'input', function () {
+      $(this).closest('.control-group, form').removeClass('focus');
+    });
+
+    // Table: Toggle all checkboxes
+    $('.table .toggle-all').on('click', function() {
+      var ch = $(this).find(':checkbox').prop('checked');
+      $(this).closest('.table').find('tbody :checkbox').checkbox(!ch ? 'check' : 'uncheck');
+    });
+
+    // Table: Add class row selected
+    $('.table tbody :checkbox').on('check uncheck toggle', function (e) {
+      var $this = $(this)
+        , check = $this.prop('checked')
+        , toggle = e.type == 'toggle'
+        , checkboxes = $('.table tbody :checkbox')
+        , checkAll = checkboxes.length == checkboxes.filter(':checked').length
+
+      $this.closest('tr')[check ? 'addClass' : 'removeClass']('selected-row');
+      if (toggle) $this.closest('.table').find('.toggle-all :checkbox').checkbox(checkAll ? 'check' : 'uncheck');
+    });
+
+    // jQuery UI Datepicker
+    $('#inputBday').datepicker({
+      showOtherMonths: true,
+      selectOtherMonths: true,
+      dateFormat: "dd/mm/yy",
+      yearRange: '-1:+1'
+    }).prev('.btn').on('click', function (e) {
+      e && e.preventDefault();
+      $('#inputBday').focus();
+    });
+    $.extend($.datepicker, {_checkOffset:function(inst,offset,isFixed){return offset}});
+
+    // Switch
+    $("[data-toggle='switch']").wrap('<div class="switch" />').parent().bootstrapSwitch();
+
+    // Stackable tables
+    $(".table-striped").stacktable({id: "rwd-table"});
+  });
+})(jQuery);
