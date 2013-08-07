@@ -1,9 +1,11 @@
 body{padding-top:20px;}
 .container-narrow{margin:0 auto;max-width:700px;}
 .container-narrow>hr{margin:30px 0;}
-.masthead .brand{background:url('../images/logo_gruponews_white.png') no-repeat;margin:9px 0 0 40px;text-indent:-99999em;width:143px;}
+.masthead .brand{background:url('../images/logo_gruponews_white.png') no-repeat center;text-indent:-99999em;width:143px;}
 .loader{padding:25px 0 0 0;}
 .loading{background:url('../images/loading.gif') no-repeat;display:none;padding:0 0 0 25px;}
 .text-error.cep{display:none;}
 .alert{padding:0 30px;}
+.row-fluid .ui-spinner input{margin:0;}
+a.disabled{color:#bdc3c7;opacity:0.7;filter:alpha(opacity=70);}
 footer .brand{background:url('../images/logo_gruponews_grey.png') no-repeat;display:block;height:32px;text-indent:-99999em;}

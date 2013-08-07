@@ -1,3 +1,4 @@
+Globalize.culture( "pt-BR" );
 //Loading Personal Information
 function getPersonalInfo() {
 	if($.trim($("#inputRG").val()) !== ""){
